@@ -14,6 +14,7 @@ type Scenario struct {
 	ID          string
 	Description string
 	Mocks       []Mock
+	Expect      *Expect
 }
 
 type Mock struct {
@@ -23,6 +24,12 @@ type Mock struct {
 	ExitCode    *int `yaml:"exit-code"`
 	Stdout      *string
 	Stderr      *string
+}
+
+type Expect struct {
+	ExitCode *int `yaml:"exit-code"`
+	Stdout   *string
+	Stderr   *string
 }
 
 func ParseScenarios(scenariosFile io.Reader) (*Scenarios, error) {
