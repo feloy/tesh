@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/feloy/tesh/pkg/mocks"
+	"github.com/feloy/tesh/pkg/scenarios"
 	"mvdan.cc/sh/v3/interp"
 )
 
-func GetExecHandler(mock mocks.Mock) func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc {
+func GetExecHandler(mock scenarios.Mock) func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc {
 	return func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc {
 		return func(ctx context.Context, args []string) error {
 			if args[0] != mock.Command {

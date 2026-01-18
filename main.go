@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/feloy/tesh/pkg/handlers/exec"
-	"github.com/feloy/tesh/pkg/mocks"
+	"github.com/feloy/tesh/pkg/scenarios"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -36,7 +36,7 @@ func main() {
 			log.Fatal(err)
 		}
 		defer mocksFile.Close()
-		mocksDefinitions, err := mocks.ParseMocks(mocksFile)
+		mocksDefinitions, err := scenarios.ParseScenarios(mocksFile)
 		if err != nil {
 			log.Fatal(err)
 		}
