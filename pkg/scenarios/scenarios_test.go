@@ -18,6 +18,10 @@ scenarios:
     exit-code: 0
     stdout: some text in standard output
     stderr: some text in standard error
+  expect:
+    exit-code: 0
+    stdout: some text in standard output
+    stderr: some text in standard error
 `))
 	if err != nil {
 		t.Fatalf("failed to parse mocks: %v", err)
@@ -55,5 +59,24 @@ scenarios:
 		t.Fatalf("expected mock stderr to be some text in standard error, got nil")
 	} else if *scenarios.Scenarios[0].Mocks[0].Stderr != "some text in standard error" {
 		t.Fatalf("expected mock stderr to be some text in standard error, got %s", *scenarios.Scenarios[0].Mocks[0].Stderr)
+	}
+
+	if scenarios.Scenarios[0].Expect == nil {
+		t.Fatalf("expected expect to be not nil, got nil")
+	}
+	if scenarios.Scenarios[0].Expect.ExitCode == nil {
+		t.Fatalf("expected expect exit code to be not nil, got nil")
+	} else if *scenarios.Scenarios[0].Expect.ExitCode != 0 {
+		t.Fatalf("expected expect exit code to be 0, got %d", *scenarios.Scenarios[0].Expect.ExitCode)
+	}
+	if scenarios.Scenarios[0].Expect.Stdout == nil {
+		t.Fatalf("expected expect stdout to be not nil, got nil")
+	} else if *scenarios.Scenarios[0].Expect.Stdout != "some text in standard output" {
+		t.Fatalf("expected expect stdout to be some text in standard output, got %s", *scenarios.Scenarios[0].Expect.Stdout)
+	}
+	if scenarios.Scenarios[0].Expect.Stderr == nil {
+		t.Fatalf("expected expect stderr to be not nil, got nil")
+	} else if *scenarios.Scenarios[0].Expect.Stderr != "some text in standard error" {
+		t.Fatalf("expected expect stderr to be some text in standard error, got %s", *scenarios.Scenarios[0].Expect.Stderr)
 	}
 }

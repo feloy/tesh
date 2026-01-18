@@ -1,0 +1,70 @@
+scenarios:
+- id: file-exists
+  description: file exists
+  mocks:
+  - description: the file /path/to/file exists
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 0
+    stdout: some text in the file
+  expect:
+    exit-code: 0
+    stdout: some text in the file
+    stderr: ""
+
+- id: file-not-exists
+  description: file does not exist
+  mocks:
+  - description: the file /path/to/file does not exist
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 1
+    stderr: the file /path/to/file does not exist
+  expect:
+    exit-code: 1
+    stdout: ""
+    stderr: the file /path/to/file does not exist
+
+- id: file-not-exists-failing-exit-code
+  description: file does not exist
+  mocks:
+  - description: the file /path/to/file does not exist
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 1
+    stderr: the file /path/to/file does not exist
+  expect:
+    exit-code: 0
+    stdout: ""
+    stderr: the file /path/to/file does not exist
+
+- id: file-not-exists-failing-stdout
+  description: file does not exist
+  mocks:
+  - description: the file /path/to/file does not exist
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 1
+    stderr: the file /path/to/file does not exist
+  expect:
+    exit-code: 1
+    stdout: "some wrong expect"
+    stderr: the file /path/to/file does not exist
+
+- id: file-not-exists-failing-stderr
+  description: file does not exist
+  mocks:
+  - description: the file /path/to/file does not exist
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 1
+    stderr: the file /path/to/file does not exist
+  expect:
+    exit-code: 1
+    stdout: ""
+    stderr: some wrong stderr

@@ -21,11 +21,11 @@ func GetExecHandler(mock scenarios.Mock) func(next interp.ExecHandlerFunc) inter
 			}
 			if mock.Stdout != nil {
 				hc := interp.HandlerCtx(ctx)
-				fmt.Fprintln(hc.Stdout, *mock.Stdout)
+				fmt.Fprintf(hc.Stdout, "%s", *mock.Stdout)
 			}
 			if mock.Stderr != nil {
 				hc := interp.HandlerCtx(ctx)
-				fmt.Fprintln(hc.Stderr, *mock.Stderr)
+				fmt.Fprintf(hc.Stderr, "%s", *mock.Stderr)
 			}
 			if mock.ExitCode != nil {
 				return interp.ExitStatus(*mock.ExitCode)
