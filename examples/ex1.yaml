@@ -1,0 +1,20 @@
+scenarios:
+- id: file-exists
+  description: file exists
+  mocks:
+  - description: the file /path/to/file exists
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 0
+    stdout: some text in the file
+
+- id: file-not-exists
+  description: file does not exist
+  mocks:
+  - description: the file /path/to/file does not exist
+    command: cat
+    args:
+    - /path/to/file
+    exit-code: 1
+    stderr: the file /path/to/file does not exist

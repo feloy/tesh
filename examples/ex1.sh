@@ -1,0 +1,1 @@
+cat /path/to/file
