@@ -54,7 +54,7 @@ func main() {
 	runner, _ := interp.New(
 		interp.Env(expand.ListEnviron("GLOBAL=global_value")),
 		interp.Env(expand.ListEnviron(os.Environ()...)),
-		interp.StdIO(nil, os.Stdout, os.Stdout),
+		interp.StdIO(nil, os.Stdout, os.Stderr),
 		interp.ExecHandlers(execHandlers...),
 	)
 	result := runner.Run(context.TODO(), script)

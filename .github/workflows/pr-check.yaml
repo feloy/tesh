@@ -20,9 +20,20 @@ jobs:
       - name: build tesh
         run: go build -o tesh main.go
 
-      - name: run smoke tests
+      - name: run scripts smoke tests
+        run: |
+          # should exit with code != 0
+          ! ./tesh examples/ex1.sh
+          # should print "the file /path/to/file does not exist" in the standard error
+          ./tesh examples/ex1.sh 2>&1 > /dev/null | grep "cat: /path/to/file: No such file or directory"
+
+      - name: run scenarios smoke tests
         run: |
           # should exit with code 0
           ./tesh examples/ex1.sh examples/ex1.yaml file-exists
-          # should exit with code 1
+          # should print "some text in the file" in the standard output
+          ./tesh examples/ex1.sh examples/ex1.yaml file-exists | grep "some text in the file"
+          # should exit with code != 0
           ! ./tesh examples/ex1.sh examples/ex1.yaml file-not-exists
+          # should print "the file /path/to/file does not exist" in the standard error
+          ./tesh examples/ex1.sh examples/ex1.yaml file-not-exists 2>&1 > /dev/null | grep "the file /path/to/file does not exist"
