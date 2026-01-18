@@ -1,4 +1,4 @@
-package mocks
+package scenarios
 
 import (
 	"io"
@@ -6,7 +6,7 @@ import (
 	"go.yaml.in/yaml/v2"
 )
 
-type Mocks struct {
+type Scenarios struct {
 	Scenarios []Scenario
 }
 
@@ -25,11 +25,11 @@ type Mock struct {
 	Stderr      *string
 }
 
-func ParseMocks(mocksFile io.Reader) (*Mocks, error) {
-	mocks := &Mocks{}
-	err := yaml.NewDecoder(mocksFile).Decode(mocks)
+func ParseScenarios(scenariosFile io.Reader) (*Scenarios, error) {
+	scenarios := &Scenarios{}
+	err := yaml.NewDecoder(scenariosFile).Decode(scenarios)
 	if err != nil {
 		return nil, err
 	}
-	return mocks, nil
+	return scenarios, nil
 }

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/feloy/tesh/pkg/mocks"
+	"github.com/feloy/tesh/pkg/scenarios"
 	"mvdan.cc/sh/v3/interp"
 )
 
 func TestExitCode1(t *testing.T) {
-	mock := mocks.Mock{
+	mock := scenarios.Mock{
 		Description: "git diff indicates there are changes in the repository",
 		Command:     "git",
 		Args:        []string{"diff"},
@@ -27,7 +27,7 @@ func TestExitCode1(t *testing.T) {
 }
 
 func TestExitCode0(t *testing.T) {
-	mock := mocks.Mock{
+	mock := scenarios.Mock{
 		Description: "git diff indicates there are changes in the repository",
 		Command:     "git",
 		Args:        []string{"diff"},
@@ -44,7 +44,7 @@ func TestExitCode0(t *testing.T) {
 }
 
 func TestExitCodeNil(t *testing.T) {
-	mock := mocks.Mock{
+	mock := scenarios.Mock{
 		Description: "git diff indicates there are changes in the repository",
 		Command:     "git",
 		Args:        []string{"diff"},
@@ -60,7 +60,7 @@ func TestExitCodeNil(t *testing.T) {
 }
 
 func TestOtherCommand(t *testing.T) {
-	mock := mocks.Mock{
+	mock := scenarios.Mock{
 		Description: "git diff indicates there are changes in the repository",
 		Command:     "git",
 		Args:        []string{"diff"},
@@ -79,7 +79,7 @@ func TestOtherCommand(t *testing.T) {
 }
 
 func TestOtherArgs(t *testing.T) {
-	mock := mocks.Mock{
+	mock := scenarios.Mock{
 		Description: "git diff indicates there are changes in the repository",
 		Command:     "git",
 		Args:        []string{"diff"},
