@@ -15,5 +15,14 @@ jobs:
           go-version: 1.24
 
       - name: run tests
+        run: go test ./...
+
+      - name: build tesh
+        run: go build -o tesh main.go
+
+      - name: run smoke tests
         run: |
-          go test ./...
+          # should exit with code 0
+          ./tesh examples/ex1.sh examples/ex1.yaml file-exists
+          # should exit with code 1
+          ! ./tesh examples/ex1.sh examples/ex1.yaml file-not-exists
