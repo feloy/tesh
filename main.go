@@ -1,20 +1,11 @@
 package main
 
 import (
-	"io"
 	"log"
 	"os"
-	"strings"
 
 	"github.com/feloy/tesh/pkg/run"
 )
-
-type nopWriterCloser struct {
-	*strings.Reader
-}
-
-func (nopWriterCloser) Write([]byte) (int, error) { return 0, io.EOF }
-func (nopWriterCloser) Close() error              { return nil }
 
 func main() {
 	if len(os.Args) < 2 {
