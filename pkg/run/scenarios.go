@@ -1,10 +1,13 @@
 package run
 
 import (
+	"bytes"
 	"context"
+	"io"
 	"log"
 	"os"
 
+	"github.com/feloy/tesh/pkg/expect"
 	"github.com/feloy/tesh/pkg/handlers/exec"
 	"github.com/feloy/tesh/pkg/scenarios"
 	"mvdan.cc/sh/v3/expand"
@@ -45,10 +48,19 @@ func Scenarios(file *os.File, scenariosFile *os.File, singleScenarioID *string) 
 		log.Fatalf("scenario %s not found", *singleScenarioID)
 	}
 
+	var stdout io.ReadWriter = os.Stdout
+	var stderr io.ReadWriter = os.Stderr
+	if expectations != nil {
+		var stdoutBuffer bytes.Buffer
+		var stderrBuffer bytes.Buffer
+		stdout = &stdoutBuffer
+		stderr = &stderrBuffer
+	}
+
 	runner, _ := interp.New(
 		interp.Env(expand.ListEnviron("GLOBAL=global_value")),
 		interp.Env(expand.ListEnviron(os.Environ()...)),
-		interp.StdIO(nil, os.Stdout, os.Stderr),
+		interp.StdIO(nil, stdout, stderr),
 		interp.ExecHandlers(execHandlers...),
 	)
 	result := runner.Run(context.TODO(), script)
@@ -59,5 +71,7 @@ func Scenarios(file *os.File, scenariosFile *os.File, singleScenarioID *string) 
 		} else {
 			os.Exit(1)
 		}
+	} else {
+		expect.CheckExpectations(expectations, result.(interp.ExitStatus), stdout, stderr)
 	}
 }
