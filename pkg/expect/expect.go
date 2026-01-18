@@ -2,13 +2,34 @@ package expect
 
 import (
 	"io"
+	"log"
 
 	"github.com/feloy/tesh/pkg/scenarios"
 	"mvdan.cc/sh/v3/interp"
 )
 
 func CheckExpectations(expectations *scenarios.Expect, result interp.ExitStatus, stdout io.Reader, stderr io.Reader) {
-	//fmt.Printf("exit code: %d\n", result)
-	//fmt.Printf("stdout: %s\n", stdout)
-	//fmt.Printf("stderr: %s\n", stderr)
+	if expectations.ExitCode != nil {
+		if *expectations.ExitCode != int(result) {
+			log.Fatalf("expected exit code %d, got %d", *expectations.ExitCode, result)
+		}
+		if expectations.Stdout != nil {
+			stdoutContent, err := io.ReadAll(stdout)
+			if err != nil {
+				log.Fatalf("failed to read stdout: %v", err)
+			}
+			if *expectations.Stdout != string(stdoutContent) {
+				log.Fatalf("expected stdout %q, got %q", *expectations.Stdout, string(stdoutContent))
+			}
+		}
+		if expectations.Stderr != nil {
+			stderrContent, err := io.ReadAll(stderr)
+			if err != nil {
+				log.Fatalf("failed to read stderr: %v", err)
+			}
+			if *expectations.Stderr != string(stderrContent) {
+				log.Fatalf("expected stderr %q, got %q", *expectations.Stderr, string(stderrContent))
+			}
+		}
+	}
 }

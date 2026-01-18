@@ -37,3 +37,11 @@ jobs:
           ! ./tesh examples/ex1.sh examples/ex1.yaml file-not-exists
           # should print "the file /path/to/file does not exist" in the standard error
           ./tesh examples/ex1.sh examples/ex1.yaml file-not-exists 2>&1 > /dev/null | grep "the file /path/to/file does not exist"
+
+      - name: run scenarios with expectations smoke tests
+        run: |
+          ./tesh examples/ex2.sh examples/ex2.yaml file-exists
+          ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists
+          ! ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists-failing-exit-code
+          ! ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists-failing-stdout
+          ! ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists-failing-stderr
