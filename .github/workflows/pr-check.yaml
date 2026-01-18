@@ -15,5 +15,4 @@ jobs:
           go-version: 1.24
 
       - name: run tests
-        run: |
-          go test ./...
+        run: go test ./...
