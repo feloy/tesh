@@ -26,6 +26,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer scenariosFile.Close()
+
 	var singleScenarioID *string
 	if len(os.Args) > 3 {
 		singleScenarioID = &os.Args[3]
