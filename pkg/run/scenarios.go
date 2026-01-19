@@ -16,7 +16,7 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-func Scenarios(file *os.File, scenariosFile *os.File, singleScenarioID *string) {
+func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string) {
 	if singleScenarioID == nil {
 		log.Fatal("single scenario ID is required")
 	}
@@ -27,7 +27,6 @@ func Scenarios(file *os.File, scenariosFile *os.File, singleScenarioID *string) 
 
 	execHandlers := []func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc{}
 
-	defer scenariosFile.Close()
 	mocksDefinitions, err := scenarios.ParseScenarios(scenariosFile)
 	if err != nil {
 		log.Fatal(err)
@@ -70,7 +69,7 @@ func Scenarios(file *os.File, scenariosFile *os.File, singleScenarioID *string) 
 		if status, ok := result.(interp.ExitStatus); ok {
 			system.Exit(int(status))
 		} else {
-			system.Exit(1)
+			system.Exit(0)
 		}
 	} else {
 		expect.CheckExpectations(expectations, result.(interp.ExitStatus), stdout, stderr)
