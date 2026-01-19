@@ -2,14 +2,16 @@ package run
 
 import (
 	"context"
+	"io"
 	"os"
 
+	"github.com/feloy/tesh/pkg/system"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
 )
 
-func Script(file *os.File) {
+func Script(file io.Reader) {
 	script, _ := syntax.NewParser().Parse(file, "")
 
 	runner, _ := interp.New(
@@ -20,8 +22,8 @@ func Script(file *os.File) {
 	result := runner.Run(context.TODO(), script)
 
 	if status, ok := result.(interp.ExitStatus); ok {
-		os.Exit(int(status))
+		system.Exit(int(status))
 	} else {
-		os.Exit(1)
+		system.Exit(0)
 	}
 }

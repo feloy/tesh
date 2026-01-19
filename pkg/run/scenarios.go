@@ -10,6 +10,7 @@ import (
 	"github.com/feloy/tesh/pkg/expect"
 	"github.com/feloy/tesh/pkg/handlers/exec"
 	"github.com/feloy/tesh/pkg/scenarios"
+	"github.com/feloy/tesh/pkg/system"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -67,9 +68,9 @@ func Scenarios(file *os.File, scenariosFile *os.File, singleScenarioID *string) 
 
 	if expectations == nil {
 		if status, ok := result.(interp.ExitStatus); ok {
-			os.Exit(int(status))
+			system.Exit(int(status))
 		} else {
-			os.Exit(1)
+			system.Exit(1)
 		}
 	} else {
 		expect.CheckExpectations(expectations, result.(interp.ExitStatus), stdout, stderr)
