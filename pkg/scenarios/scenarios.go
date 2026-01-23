@@ -30,6 +30,13 @@ type Expect struct {
 	ExitCode *int `yaml:"exit-code"`
 	Stdout   *string
 	Stderr   *string
+	Calls    []Call
+}
+
+type Call struct {
+	Command string
+	Args    []string
+	Called  int
 }
 
 func ParseScenarios(scenariosFile io.Reader) (*Scenarios, error) {

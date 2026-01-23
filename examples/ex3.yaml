@@ -1,0 +1,86 @@
+scenarios:
+- id: file-exists
+  description: file exists
+  mocks:
+  - description: the file /file/exists exists
+    command: ls
+    args:
+    - /file/exists
+    exit-code: 0
+  - description: the file /file/exists has a content
+    command: cat
+    args:
+    - /file/exists
+    exit-code: 0
+    stdout: some text in the file
+  expect:
+    exit-code: 0
+    stdout: some text in the file
+    stderr: ""
+    calls:
+    - command: cat
+      args:
+      - /file/exists
+      called: 1
+
+- id: file-not-exists
+  description: file does not exist
+  mocks:
+  - description: the file /file/exists does not exist
+    command: ls
+    args:
+    - /file/exists
+    exit-code: 1
+    stderr: the file /path/to/file does not exist
+  expect:
+    exit-code: 1
+    stdout: ""
+    stderr: the file /path/to/file does not exist
+    calls:
+    - command: cat
+      args:
+      - /file/exists
+      called: 0
+
+- id: file-not-exists-failing-call
+  description: file does not exist and call is expected
+  mocks:
+  - description: the file /file/exists does not exist
+    command: ls
+    args:
+    - /file/exists
+    exit-code: 1
+    stderr: the file /path/to/file does not exist
+  expect:
+    exit-code: 1
+    stdout: ""
+    stderr: the file /path/to/file does not exist
+    calls:
+    - command: cat
+      args:
+      - /file/exists
+      called: 1
+
+- id: file-exists-failing-call
+  description: file exists
+  mocks:
+  - description: the file /file/exists exists
+    command: ls
+    args:
+    - /file/exists
+    exit-code: 0
+  - description: the file /file/exists has a content
+    command: cat
+    args:
+    - /file/exists
+    exit-code: 0
+    stdout: some text in the file
+  expect:
+    exit-code: 0
+    stdout: some text in the file
+    stderr: ""
+    calls:
+    - command: cat
+      args:
+      - /file/exists
+      called: 0

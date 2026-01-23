@@ -260,3 +260,20 @@ scenarios:
 		t.Fatalf("expected stderr to be empty, got %s", outStderr)
 	}
 }
+
+func TestScenariosWithCallsExpectationsPassing(t *testing.T) {
+	script := strings.NewReader(`cat /path/to/file`)
+	scenarios := strings.NewReader(`
+scenarios:
+- id: cat-is-called
+  description: cat is called
+  expect:
+    calls:
+    - command: cat
+      args:
+      - /path/to/file
+      called: 1`)
+
+	singleScenarioID := "cat-is-called"
+	Scenarios(script, scenarios, &singleScenarioID)
+}
