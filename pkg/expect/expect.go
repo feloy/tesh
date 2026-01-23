@@ -5,12 +5,11 @@ import (
 	"log"
 
 	"github.com/feloy/tesh/pkg/scenarios"
-	"mvdan.cc/sh/v3/interp"
 )
 
-func CheckExpectations(expectations *scenarios.Expect, result interp.ExitStatus, stdout io.Reader, stderr io.Reader) {
+func CheckExpectations(expectations *scenarios.Expect, result int, stdout io.Reader, stderr io.Reader) {
 	if expectations.ExitCode != nil {
-		if *expectations.ExitCode != int(result) {
+		if *expectations.ExitCode != result {
 			log.Fatalf("expected exit code %d, got %d", *expectations.ExitCode, result)
 		}
 		if expectations.Stdout != nil {

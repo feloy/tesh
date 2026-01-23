@@ -45,3 +45,10 @@ jobs:
           ! ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists-failing-exit-code
           ! ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists-failing-stdout
           ! ./tesh examples/ex2.sh examples/ex2.yaml file-not-exists-failing-stderr
+
+      - name: run scenarios with calls expectations smoke tests
+        run: |
+          ./tesh examples/ex3.sh examples/ex3.yaml file-exists
+          ./tesh examples/ex3.sh examples/ex3.yaml file-not-exists
+          ! ./tesh examples/ex3.sh examples/ex3.yaml file-not-exists-failing-call
+          ! ./tesh examples/ex3.sh examples/ex3.yaml file-exists-failing-call

@@ -8,9 +8,11 @@ import (
 	"os"
 
 	"github.com/feloy/tesh/pkg/expect"
+	"github.com/feloy/tesh/pkg/handlers/call"
 	"github.com/feloy/tesh/pkg/handlers/exec"
 	"github.com/feloy/tesh/pkg/scenarios"
 	"github.com/feloy/tesh/pkg/system"
+
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/interp"
 	"mvdan.cc/sh/v3/syntax"
@@ -24,6 +26,11 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 	script, _ := syntax.NewParser().Parse(file, "")
 
 	var expectations *scenarios.Expect
+
+	var runnerOptions []interp.RunnerOption = []interp.RunnerOption{
+		interp.Env(expand.ListEnviron("GLOBAL=global_value")),
+		interp.Env(expand.ListEnviron(os.Environ()...)),
+	}
 
 	execHandlers := []func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc{}
 
@@ -48,6 +55,10 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 		log.Fatalf("scenario %s not found", *singleScenarioID)
 	}
 
+	runnerOptions = append(runnerOptions, interp.ExecHandlers(execHandlers...))
+
+	var callsResult call.CallsResult
+
 	var stdout io.ReadWriter = os.Stdout
 	var stderr io.ReadWriter = os.Stderr
 	if expectations != nil {
@@ -55,23 +66,30 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 		var stderrBuffer bytes.Buffer
 		stdout = &stdoutBuffer
 		stderr = &stderrBuffer
-	}
 
-	runner, _ := interp.New(
-		interp.Env(expand.ListEnviron("GLOBAL=global_value")),
-		interp.Env(expand.ListEnviron(os.Environ()...)),
-		interp.StdIO(nil, stdout, stderr),
-		interp.ExecHandlers(execHandlers...),
-	)
+		if len(expectations.Calls) > 0 {
+			var callHandler interp.CallHandlerFunc
+			callHandler, callsResult = call.GetCallHandler(expectations.Calls)
+			runnerOptions = append(runnerOptions, interp.CallHandler(callHandler))
+		}
+	}
+	runnerOptions = append(runnerOptions, interp.StdIO(nil, stdout, stderr))
+
+	runner, _ := interp.New(runnerOptions...)
 	result := runner.Run(context.TODO(), script)
 
-	if expectations == nil {
-		if status, ok := result.(interp.ExitStatus); ok {
-			system.Exit(int(status))
-		} else {
-			system.Exit(0)
-		}
+	var intResult int
+	if _, ok := result.(interp.ExitStatus); ok {
+		intResult = int(result.(interp.ExitStatus))
 	} else {
-		expect.CheckExpectations(expectations, result.(interp.ExitStatus), stdout, stderr)
+		intResult = 0
+	}
+	if expectations == nil {
+		system.Exit(intResult)
+	} else {
+		expect.CheckExpectations(expectations, intResult, stdout, stderr)
+		if len(expectations.Calls) > 0 {
+			callsResult.CheckResults()
+		}
 	}
 }
