@@ -1,37 +1,18 @@
 package main
 
 import (
-	"log"
 	"os"
 
-	"github.com/feloy/tesh/pkg/run"
+	"github.com/feloy/tesh/pkg/cmd"
+	"github.com/spf13/pflag"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		log.Fatal("script file is required")
-	}
-	file, err := os.Open(os.Args[1])
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
+	flags := pflag.NewFlagSet("tesh", pflag.ExitOnError)
+	pflag.CommandLine = flags
 
-	if len(os.Args) == 2 {
-		run.Script(file)
-		return
+	root := cmd.NewTesh()
+	if err := root.Execute(); err != nil {
+		os.Exit(1)
 	}
-
-	scenariosFile, err := os.Open(os.Args[2])
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer scenariosFile.Close()
-
-	var singleScenarioID *string
-	if len(os.Args) > 3 {
-		singleScenarioID = &os.Args[3]
-	}
-
-	run.Scenarios(file, scenariosFile, singleScenarioID)
 }
