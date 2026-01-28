@@ -49,7 +49,29 @@ func NewTesh() *cobra.Command {
 				singleScenarioID = &o.SingleScenarioID
 			}
 
-			run.Scenarios(scriptFile, scenariosFile, singleScenarioID)
+			results := run.Scenarios(scriptFile, scenariosFile, singleScenarioID)
+
+			// TODO move to specific outputter
+			var exitCode int = 0
+			for _, result := range results {
+				fmt.Printf("Scenario: %s\n", result.ScenarioID)
+				if result.ExitCode != nil {
+					fmt.Printf("Exit Code: expected %d, actual %d\n", result.ExitCode.Expected, result.ExitCode.Actual)
+				}
+				if result.Stdout != nil {
+					fmt.Printf("Stdout: expected %q, actual %q\n", result.Stdout.Expected, result.Stdout.Actual)
+				}
+				if result.Stderr != nil {
+					fmt.Printf("Stderr: expected %q, actual %q\n", result.Stderr.Expected, result.Stderr.Actual)
+				}
+				for _, call := range result.Calls {
+					fmt.Printf("Call: %s %v, expected %d calls, actual %d calls\n", call.Command, call.Args, call.ExpectedCalled, call.ActualCalled)
+				}
+				if !result.IsSuccess() {
+					exitCode = 1
+				}
+			}
+			os.Exit(exitCode)
 			return nil
 		},
 	}

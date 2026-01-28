@@ -2,15 +2,15 @@ package call
 
 import (
 	"context"
-	"log"
 	"reflect"
 
+	"github.com/feloy/tesh/pkg/api"
 	"github.com/feloy/tesh/pkg/scenarios"
 	"mvdan.cc/sh/v3/interp"
 )
 
 type CallsResult interface {
-	CheckResults()
+	CheckResults(scenarioResult *api.ScenarioResult)
 }
 
 func GetCallHandler(calls []scenarios.Call) (interp.CallHandlerFunc, CallsResult) {
@@ -35,7 +35,7 @@ type callsResultImpl struct {
 	realCalls     []scenarios.Call
 }
 
-func (c *callsResultImpl) CheckResults() {
+func (c *callsResultImpl) CheckResults(scenarioResult *api.ScenarioResult) {
 	remainingExpectedCalls := []scenarios.Call{}
 	for _, expectedCall := range c.expectedCalls {
 		found := false
@@ -43,7 +43,12 @@ func (c *callsResultImpl) CheckResults() {
 			if expectedCall.Command == realCall.Command && reflect.DeepEqual(expectedCall.Args, realCall.Args) {
 				found = true
 				if expectedCall.Called != realCall.Called {
-					log.Fatalf("expected call %s %v to be called %d times, got %d times", expectedCall.Command, expectedCall.Args, expectedCall.Called, realCall.Called)
+					scenarioResult.Calls = append(scenarioResult.Calls, api.CallResult{
+						Command:        expectedCall.Command,
+						Args:           expectedCall.Args,
+						ExpectedCalled: expectedCall.Called,
+						ActualCalled:   realCall.Called,
+					})
 				}
 			}
 		}
@@ -54,7 +59,12 @@ func (c *callsResultImpl) CheckResults() {
 	if len(remainingExpectedCalls) > 0 {
 		for _, remainingCall := range remainingExpectedCalls {
 			if remainingCall.Called != 0 {
-				log.Fatalf("expected call %s %v to be called %d times, got %d times", remainingCall.Command, remainingCall.Args, remainingCall.Called, 0)
+				scenarioResult.Calls = append(scenarioResult.Calls, api.CallResult{
+					Command:        remainingCall.Command,
+					Args:           remainingCall.Args,
+					ExpectedCalled: remainingCall.Called,
+					ActualCalled:   0,
+				})
 			}
 		}
 	}
