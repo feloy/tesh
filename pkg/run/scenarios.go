@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/feloy/tesh/pkg/api"
 	"github.com/feloy/tesh/pkg/expect"
 	"github.com/feloy/tesh/pkg/handlers/call"
 	"github.com/feloy/tesh/pkg/handlers/exec"
@@ -18,9 +19,13 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string) {
+func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string) []api.ScenarioResult {
 	if singleScenarioID == nil {
 		log.Fatal("single scenario ID is required")
+	}
+
+	var scenarioResult = api.ScenarioResult{
+		ScenarioID: *singleScenarioID,
 	}
 
 	script, _ := syntax.NewParser().Parse(file, "")
@@ -86,10 +91,12 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 	}
 	if expectations == nil {
 		system.Exit(intResult)
+		return nil
 	} else {
-		expect.CheckExpectations(expectations, intResult, stdout, stderr)
+		expect.CheckExpectations(expectations, &scenarioResult, intResult, stdout, stderr)
 		if len(expectations.Calls) > 0 {
-			callsResult.CheckResults()
+			callsResult.CheckResults(&scenarioResult)
 		}
+		return []api.ScenarioResult{scenarioResult}
 	}
 }
