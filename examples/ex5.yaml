@@ -1,0 +1,11 @@
+scenarios:
+- id: env-not-set
+  description: MYVAR env is not set
+  expect:
+    stdout:
+- id: env-is-set
+  description: MYVAR is set with myvalue
+  envs:
+  - MYVAR=myvalue
+  expect:
+    stdout: myvalue

@@ -9,3 +9,4 @@ set -e
 ! ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-not-exists-failing-stdout
 ! ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-not-exists-failing-stderr
 ./tesh examples/ex4.sh --scenarios examples/ex4.yaml
+./tesh examples/ex5.sh --scenarios examples/ex5.yaml

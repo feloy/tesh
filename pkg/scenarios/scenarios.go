@@ -14,6 +14,7 @@ type Scenario struct {
 	ID          string
 	Description string
 	Mocks       []Mock
+	Envs        []string
 	Expect      *Expect
 }
 
