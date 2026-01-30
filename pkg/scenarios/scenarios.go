@@ -15,6 +15,7 @@ type Scenario struct {
 	Description string
 	Mocks       []Mock
 	Envs        []string
+	Files       []File
 	Expect      *Expect
 }
 
@@ -25,6 +26,11 @@ type Mock struct {
 	ExitCode    *int `yaml:"exit-code"`
 	Stdout      *string
 	Stderr      *string
+}
+
+type File struct {
+	Path   string
+	Exists bool
 }
 
 type Expect struct {
