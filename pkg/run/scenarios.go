@@ -32,13 +32,9 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 	for _, scenario := range mocksDefinitions.Scenarios {
 		var expectations *scenarios.Expect
 
+		scenarioEnv := append(os.Environ(), scenario.Envs...)
 		var runnerOptions []interp.RunnerOption = []interp.RunnerOption{
-			interp.Env(expand.ListEnviron("GLOBAL=global_value")),
-			interp.Env(expand.ListEnviron(os.Environ()...)),
-		}
-
-		for _, env := range scenario.Envs {
-			runnerOptions = append(runnerOptions, interp.Env(expand.ListEnviron(env)))
+			interp.Env(expand.ListEnviron(scenarioEnv...)),
 		}
 
 		execHandlers := []func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc{}
