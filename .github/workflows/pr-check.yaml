@@ -26,6 +26,9 @@ jobs:
       - name: run scenarios smoke tests
         run: ./scripts/smoke-scenarios.sh
 
+      - name: run files smoke tests
+        run: ./scripts/smoke-files.sh
+
       - name: run scenarios with expectations smoke tests
         run: ./scripts/smoke-expects.sh
 

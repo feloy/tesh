@@ -6,5 +6,6 @@ set -e
 ./scripts/smoke-scenarios.sh > /dev/null 2>&1
 ./scripts/smoke-expects.sh > /dev/null 2>&1
 ./scripts/smoke-calls.sh > /dev/null 2>&1
+./scripts/smoke-files.sh > /dev/null 2>&1
 
 echo "All smoke tests passed"

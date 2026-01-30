@@ -11,6 +11,7 @@ import (
 	"github.com/feloy/tesh/pkg/expect"
 	"github.com/feloy/tesh/pkg/handlers/call"
 	"github.com/feloy/tesh/pkg/handlers/exec"
+	fileHandler "github.com/feloy/tesh/pkg/handlers/file"
 	"github.com/feloy/tesh/pkg/scenarios"
 	"github.com/feloy/tesh/pkg/system"
 
@@ -53,6 +54,10 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 		found = true
 
 		runnerOptions = append(runnerOptions, interp.ExecHandlers(execHandlers...))
+
+		if len(scenario.Files) > 0 {
+			runnerOptions = append(runnerOptions, interp.StatHandler(fileHandler.GetStatHandler(scenario.Files)))
+		}
 
 		var callsResult call.CallsResult
 
