@@ -2,6 +2,7 @@ package run
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -353,5 +354,33 @@ scenarios:
 	}
 	if results[1].ExitCode != nil {
 		t.Fatalf("expected exit code to be nil, got %d", results[1].ExitCode.Actual)
+	}
+}
+
+func TestSetEnvs(t *testing.T) {
+	script := strings.NewReader(`echo -n $MYVAR`)
+	scenarios := strings.NewReader(`
+scenarios:
+- id: env-not-set
+  description: MYVAR env is not set
+  expect:
+    stdout:
+- id: env-is-set
+  description: MYVAR is set with myvalue
+  envs:
+  - MYVAR=myvalue
+  expect:
+    stdout: myvalue`)
+
+	results := Scenarios(script, scenarios, nil)
+	if len(results) != 2 {
+		t.Fatalf("expected one result, got %d", len(results))
+	}
+	if !results[0].IsSuccess() {
+		t.Fatalf("scenario env-not-set should pass, but it fails")
+	}
+	if !results[1].IsSuccess() {
+		fmt.Printf("%v\n", results[1])
+		t.Fatalf("scenario env-is-set should pass, but it fails")
 	}
 }
