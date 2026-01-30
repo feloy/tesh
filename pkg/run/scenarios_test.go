@@ -277,3 +277,81 @@ scenarios:
 	singleScenarioID := "cat-is-called"
 	Scenarios(script, scenarios, &singleScenarioID)
 }
+
+func TestMultipleScenarios(t *testing.T) {
+	script := strings.NewReader(`cat /path/to/file`)
+	scenarios := strings.NewReader(`
+scenarios:
+- id: cat-is-called
+  description: cat is called
+  expect:
+    calls:
+    - command: cat
+      args:
+      - /path/to/file
+      called: 1
+- id: ls-is-not-called
+  description: ls is not called
+  expect:
+    calls:
+    - command: ls
+      args:
+      - /path/to/file
+      called: 0`)
+
+	results := Scenarios(script, scenarios, nil)
+	if len(results) != 2 {
+		t.Fatalf("expected 2 scenarios, got %d", len(results))
+	}
+	if results[0].ScenarioID != "cat-is-called" {
+		t.Fatalf("expected scenario ID to be cat-is-called, got %s", results[0].ScenarioID)
+	}
+	if results[0].ExitCode != nil {
+		t.Fatalf("expected exit code to be nil, got %d", results[0].ExitCode.Actual)
+	}
+	if results[1].ScenarioID != "ls-is-not-called" {
+		t.Fatalf("expected scenario ID to be ls-is-not-called, got %s", results[1].ScenarioID)
+	}
+	if results[1].ExitCode != nil {
+		t.Fatalf("expected exit code to be nil, got %d", results[1].ExitCode.Actual)
+	}
+}
+
+func TestMultipleScenariosFirstFailing(t *testing.T) {
+	script := strings.NewReader(`cat /path/to/file`)
+	scenarios := strings.NewReader(`
+scenarios:
+- id: cat-is-not-called
+  description: cat is not called
+  expect:
+    calls:
+    - command: cat
+      args:
+      - /path/to/file
+      called: 0
+- id: ls-is-not-called
+  description: ls is not called
+  expect:
+    calls:
+    - command: ls
+      args:
+      - /path/to/file
+      called: 0`)
+
+	results := Scenarios(script, scenarios, nil)
+	if len(results) != 2 {
+		t.Fatalf("expected 2 scenarios, got %d", len(results))
+	}
+	if results[0].ScenarioID != "cat-is-not-called" {
+		t.Fatalf("expected scenario ID to be cat-is-called, got %s", results[0].ScenarioID)
+	}
+	if results[0].IsSuccess() {
+		t.Fatalf("expected scenario to be failing, got success")
+	}
+	if results[1].ScenarioID != "ls-is-not-called" {
+		t.Fatalf("expected scenario ID to be ls-is-not-called, got %s", results[1].ScenarioID)
+	}
+	if results[1].ExitCode != nil {
+		t.Fatalf("expected exit code to be nil, got %d", results[1].ExitCode.Actual)
+	}
+}
