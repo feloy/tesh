@@ -21,34 +21,13 @@ jobs:
         run: go build -o tesh main.go
 
       - name: run scripts smoke tests
-        run: |
-          # should exit with code != 0
-          ! ./tesh examples/ex1.sh
-          # should print "the file /path/to/file does not exist" in the standard error
-          ./tesh examples/ex1.sh 2>&1 > /dev/null | grep "cat: /path/to/file: No such file or directory"
+        run: ./scripts/smoke-run.sh
 
       - name: run scenarios smoke tests
-        run: |
-          # should exit with code 0
-          ./tesh examples/ex1.sh --scenarios examples/ex1.yaml --scenario file-exists
-          # should print "some text in the file" in the standard output
-          ./tesh examples/ex1.sh --scenarios examples/ex1.yaml --scenario file-exists | grep "some text in the file"
-          # should exit with code != 0
-          ! ./tesh examples/ex1.sh --scenarios examples/ex1.yaml --scenario file-not-exists
-          # should print "the file /path/to/file does not exist" in the standard error
-          ./tesh examples/ex1.sh --scenarios examples/ex1.yaml --scenario file-not-exists 2>&1 > /dev/null | grep "the file /path/to/file does not exist"
+        run: ./scripts/smoke-scenarios.sh
 
       - name: run scenarios with expectations smoke tests
-        run: |
-          ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-exists
-          ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-not-exists
-          ! ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-not-exists-failing-exit-code
-          ! ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-not-exists-failing-stdout
-          ! ./tesh examples/ex2.sh --scenarios examples/ex2.yaml --scenario file-not-exists-failing-stderr
+        run: ./scripts/smoke-expects.sh
 
       - name: run scenarios with calls expectations smoke tests
-        run: |
-          ./tesh examples/ex3.sh --scenarios examples/ex3.yaml --scenario file-exists
-          ./tesh examples/ex3.sh --scenarios examples/ex3.yaml --scenario file-not-exists
-          ! ./tesh examples/ex3.sh --scenarios examples/ex3.yaml --scenario file-not-exists-failing-call
-          ! ./tesh examples/ex3.sh --scenarios examples/ex3.yaml --scenario file-exists-failing-call
+        run: ./scripts/smoke-calls.sh
