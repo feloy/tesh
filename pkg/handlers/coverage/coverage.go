@@ -12,6 +12,8 @@ type Coverage struct {
 	script     *syntax.File
 	statements map[syntax.Pos]syntax.Node
 	covered    map[syntax.Pos]bool
+	ch         chan syntax.Pos
+	done       chan struct{}
 }
 
 func New(script *syntax.File) *Coverage {
@@ -19,6 +21,8 @@ func New(script *syntax.File) *Coverage {
 		script:     script,
 		statements: make(map[syntax.Pos]syntax.Node),
 		covered:    make(map[syntax.Pos]bool),
+		ch:         make(chan syntax.Pos),
+		done:       make(chan struct{}),
 	}
 	o.init()
 	return o
@@ -32,18 +36,36 @@ func (o *Coverage) init() {
 		}
 		return true
 	})
+	go func() {
+		for {
+			pos, more := <-o.ch
+			if !more {
+				o.done <- struct{}{}
+				return
+			}
+			o.covered[pos] = true
+		}
+	}()
+}
+
+func (o *Coverage) setCovered(pos syntax.Pos) {
+	// avoid conflict by using a Go channel
+	o.ch <- pos
 }
 
 func (o *Coverage) GetCoverageHandler() interp.CallHandlerFunc {
 	handler := func(ctx context.Context, args []string) ([]string, error) {
 		hc := interp.HandlerCtx(ctx)
-		o.covered[hc.Pos] = true
+		o.setCovered(hc.Pos)
 		return args, nil
 	}
 	return handler
 }
 
 func (o *Coverage) GetCoverageResult() ([]syntax.Pos, []uint) {
+	close(o.ch)
+	<-o.done
+
 	keys := make([]syntax.Pos, 0, len(o.covered))
 	for pos := range o.covered {
 		keys = append(keys, pos)
