@@ -11,6 +11,7 @@ import (
 type TeshCmdOptions struct {
 	ScenariosFile    string
 	SingleScenarioID string
+	Coverage         bool
 }
 
 func NewTesh() *cobra.Command {
@@ -34,7 +35,7 @@ func NewTesh() *cobra.Command {
 			defer scriptFile.Close()
 
 			if o.ScenariosFile == "" {
-				run.Script(scriptFile)
+				run.Script(scriptFile, run.ScriptOptions{WithCoverage: o.Coverage, FilePath: args[0]})
 				return nil
 			}
 
@@ -78,6 +79,7 @@ func NewTesh() *cobra.Command {
 
 	cmd.Flags().StringVar(&o.ScenariosFile, "scenarios", "", "Scenarios file to use for testing the script, if not given the script is executed but not tested")
 	cmd.Flags().StringVar(&o.SingleScenarioID, "scenario", "", "Single scenario ID to run, if not given all scenarios are run")
+	cmd.Flags().BoolVar(&o.Coverage, "coverage", false, "Display covered lines during execution or scenarios and suppress normal stdout and stderr")
 
 	return cmd
 }
