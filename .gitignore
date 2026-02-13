@@ -1,2 +1,4 @@
 /tesh
 coverage.txt
+# Added by goreleaser init:
+dist/
