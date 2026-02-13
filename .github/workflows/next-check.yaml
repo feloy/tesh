@@ -1,0 +1,39 @@
+name: next-check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: run unit tests
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: setup Go
+        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v6.2.0
+        with:
+          go-version: 1.24
+
+      - name: run coverage tests
+        run: go test -coverprofile=coverage.txt ./...
+
+      - name: build tesh
+        run: go build -o tesh main.go
+
+      - name: run coverage on scripts
+        run: |
+          ./tesh examples/ex7/ex7.sh --coverage=examples/ex7/coverage.txt
+          ./tesh examples/ex8/ex8.sh --coverage=examples/ex8/coverage.txt
+          ./tesh examples/ex9/ex9.sh --scenarios=examples/ex9/ex9.yaml --coverage=examples/ex9/coverage.txt
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
