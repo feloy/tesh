@@ -11,9 +11,12 @@ import (
 const HIGHLIGHT_COLOR = "\033[32m"
 const RESET_COLOR = "\033[0m"
 
-func OutputCoverage(w io.Writer, file io.Reader, covered []syntax.Pos, lens []uint) {
+func OutputCoverage(w io.Writer, file io.Reader, positions []syntax.Pos, lens []uint, covered []uint) {
 	p := uint(0)
-	for i, pos := range covered {
+	for i, pos := range positions {
+		if covered[i] == 0 {
+			continue
+		}
 		if p > pos.Offset() {
 			continue
 		}
@@ -42,5 +45,12 @@ func OutputCoverage(w io.Writer, file io.Reader, covered []syntax.Pos, lens []ui
 			break
 		}
 		fmt.Fprintf(w, "%s", buf[:n])
+	}
+}
+
+func OutputCoverageTxt(w io.Writer, filePath string, positions []syntax.Pos, lens []uint, covered []uint) {
+	fmt.Fprintf(w, "mode: set\n")
+	for i, pos := range positions {
+		fmt.Fprintf(w, "%s:%d.%d,%d.%d 1 %d\n", filePath, pos.Line(), pos.Col(), pos.Line(), pos.Col()+lens[i], covered[i])
 	}
 }
