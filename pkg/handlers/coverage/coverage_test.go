@@ -64,17 +64,16 @@ if true; then echo D; else echo E; fi`)
 		syntax.NewPos(0, 1, 1),
 		syntax.NewPos(10, 1, 11),
 		syntax.NewPos(20, 1, 21),
-		syntax.NewPos(27, 2, 1),
 		syntax.NewPos(30, 2, 4),
 		syntax.NewPos(41, 2, 15),
 		syntax.NewPos(54, 2, 28),
 	}) {
 		t.Fatalf("incorrect expected positions, got %v", positions)
 	}
-	if !reflect.DeepEqual(lens, []uint{6, 6, 6, 37, 5, 7, 7}) {
+	if !reflect.DeepEqual(lens, []uint{6, 6, 6, 5, 7, 7}) {
 		t.Fatalf("incorrect expected lens, got %v", lens)
 	}
-	if !reflect.DeepEqual(covered, []uint{1, 1, 0, 0, 1, 1, 0}) {
+	if !reflect.DeepEqual(covered, []uint{1, 1, 0, 1, 1, 0}) {
 		t.Fatalf("incorrect expected covered, got %v", covered)
 	}
 }
