@@ -1,0 +1,11 @@
+scenarios:
+- id: file-exists
+  description: file exists
+  files:
+  - path: ./path/to/file
+    exists: true
+- id: file-not-exists
+  description: file does not exist
+  files:
+  - path: ./path/to/file
+    exists: false
