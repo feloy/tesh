@@ -17,10 +17,11 @@ func TestOutputCoverage(t *testing.T) {
 		syntax.NewPos(41, 2, 15),
 	}
 	lens := []uint{6, 6, 5, 7}
+	covered := []uint{1, 1, 1, 1}
 	file := strings.NewReader(`echo A && echo B || echo C
 if true; then echo D; else echo E; fi`)
 	buf := bytes.Buffer{}
-	OutputCoverage(&buf, file, coverage, lens)
+	OutputCoverage(&buf, file, coverage, lens, covered)
 	expected := fmt.Sprintf(`%secho A%s && %secho B%s || echo C
 if %strue;%s then %secho D;%s else echo E; fi`, HIGHLIGHT_COLOR, RESET_COLOR, HIGHLIGHT_COLOR, RESET_COLOR, HIGHLIGHT_COLOR, RESET_COLOR, HIGHLIGHT_COLOR, RESET_COLOR)
 	if buf.String() != expected {

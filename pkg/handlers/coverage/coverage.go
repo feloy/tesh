@@ -62,20 +62,27 @@ func (o *Coverage) GetCoverageHandler() interp.CallHandlerFunc {
 	return handler
 }
 
-func (o *Coverage) GetCoverageResult() ([]syntax.Pos, []uint) {
+func (o *Coverage) GetCoverageResult() ([]syntax.Pos, []uint, []uint) {
 	close(o.ch)
 	<-o.done
 
-	keys := make([]syntax.Pos, 0, len(o.covered))
-	for pos := range o.covered {
+	keys := make([]syntax.Pos, 0, len(o.statements))
+	for pos := range o.statements {
 		keys = append(keys, pos)
 	}
 	sort.Slice(keys, func(i, j int) bool {
 		return keys[i].Offset() < keys[j].Offset()
 	})
-	lens := make([]uint, 0, len(o.covered))
+
+	lens := make([]uint, 0, len(o.statements))
+	covered := make([]uint, 0, len(o.statements))
 	for _, pos := range keys {
 		lens = append(lens, o.statements[pos].End().Offset()-pos.Offset())
+		if o.covered[pos] {
+			covered = append(covered, 1)
+		} else {
+			covered = append(covered, 0)
+		}
 	}
-	return keys, lens
+	return keys, lens, covered
 }

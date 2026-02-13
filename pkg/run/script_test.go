@@ -43,7 +43,7 @@ func TestScript(t *testing.T) {
 		outCStderr <- buf.String()
 	}()
 
-	Script(script, ScriptOptions{WithCoverage: false, FilePath: ""})
+	Script(script, ScriptOptions{WithCoverage: "", FilePath: ""})
 	wStdout.Close()
 	wStderr.Close()
 	os.Stdout = oldStdout
@@ -75,7 +75,7 @@ func TestScriptWithExitCode(t *testing.T) {
 	}
 
 	script := strings.NewReader(`exit 126`)
-	Script(script, ScriptOptions{WithCoverage: false, FilePath: ""})
+	Script(script, ScriptOptions{WithCoverage: "", FilePath: ""})
 	if !exitCalled {
 		t.Fatalf("os.Exit was not called")
 	}

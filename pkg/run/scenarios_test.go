@@ -95,7 +95,7 @@ func TestScenarioEnvs(t *testing.T) {
 		outCStdout <- buf.String()
 	}()
 
-	Script(script, ScriptOptions{WithCoverage: false, FilePath: ""})
+	Script(script, ScriptOptions{WithCoverage: "", FilePath: ""})
 	wStdout.Close()
 	os.Stdout = oldStdout
 	outStdout := <-outCStdout

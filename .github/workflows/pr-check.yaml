@@ -20,11 +20,6 @@ jobs:
       - name: run coverage tests
         run: go test -coverprofile=coverage.txt ./...
 
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
       - name: build tesh
         run: go build -o tesh main.go
 
@@ -42,3 +37,11 @@ jobs:
 
       - name: run scenarios with calls expectations smoke tests
         run: ./scripts/smoke-calls.sh
+
+      - name: run coverage on scripts
+        run: ./tesh examples/ex7/ex7.sh --coverage=examples/ex7/coverage.txt
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
