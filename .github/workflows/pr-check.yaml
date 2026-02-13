@@ -39,7 +39,10 @@ jobs:
         run: ./scripts/smoke-calls.sh
 
       - name: run coverage on scripts
-        run: ./tesh examples/ex7/ex7.sh --coverage=examples/ex7/coverage.txt
+        run: |
+          ./tesh examples/ex7/ex7.sh --coverage=examples/ex7/coverage.txt
+          ./tesh examples/ex8/ex8.sh --coverage=examples/ex8/coverage.txt
+          ./tesh examples/ex9/ex9.sh --scenarios=examples/ex9/ex9.yaml --coverage=examples/ex9/coverage.txt
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2

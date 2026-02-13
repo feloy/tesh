@@ -1,0 +1,23 @@
+scenarios:
+- id: file-exists
+  description: file exists
+  files:
+  - path: /other/file/exists
+    exists: true
+  - path: ./path/to/file
+    exists: true
+  expect:
+    stdout: |
+      file exists
+      file exists
+- id: file-not-exists
+  description: file does not exist
+  files:
+  - path: /other/file/exists
+    exists: true
+  - path: ./path/to/file
+    exists: false
+  expect:
+    stdout: |
+      file does not exist
+      file does not exist

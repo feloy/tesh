@@ -55,7 +55,11 @@ scenarios:
     stdout: some text in the file`)
 	singleScenarioID := "file-exists"
 
-	Scenarios(script, scenarios, &singleScenarioID)
+	Scenarios(script, scenarios, ScenariosOptions{
+		SingleScenarioID: &singleScenarioID,
+		WithCoverage:     "",
+		FilePath:         "",
+	})
 
 	wStdout.Close()
 	wStderr.Close()
@@ -128,7 +132,11 @@ scenarios:
     stdout: some text in the file`)
 
 	singleScenarioID := "file-exists"
-	Scenarios(script, scenarios, &singleScenarioID)
+	Scenarios(script, scenarios, ScenariosOptions{
+		SingleScenarioID: &singleScenarioID,
+		WithCoverage:     "",
+		FilePath:         "",
+	})
 
 	if !exitCalled {
 		t.Fatalf("os.Exit was not called")
@@ -161,7 +169,11 @@ scenarios:
     stdout: some text in the file`)
 
 	singleScenarioID := "file-not-exists"
-	Scenarios(script, scenarios, &singleScenarioID)
+	Scenarios(script, scenarios, ScenariosOptions{
+		SingleScenarioID: &singleScenarioID,
+		WithCoverage:     "",
+		FilePath:         "",
+	})
 
 	if !exitCalled {
 		t.Fatalf("os.Exit was not called")
@@ -194,7 +206,11 @@ scenarios:
     stdout: some text in the file`)
 
 	singleScenarioID := "file-exists"
-	Scenarios(script, scenarios, &singleScenarioID)
+	Scenarios(script, scenarios, ScenariosOptions{
+		SingleScenarioID: &singleScenarioID,
+		WithCoverage:     "",
+		FilePath:         "",
+	})
 
 	if !exitCalled {
 		t.Fatalf("os.Exit was not called")
@@ -245,7 +261,11 @@ scenarios:
 		outCStderr <- buf.String()
 	}()
 
-	Scenarios(script, scenarios, &singleScenarioID)
+	Scenarios(script, scenarios, ScenariosOptions{
+		SingleScenarioID: &singleScenarioID,
+		WithCoverage:     "",
+		FilePath:         "",
+	})
 
 	wStdout.Close()
 	wStderr.Close()
@@ -276,7 +296,11 @@ scenarios:
       called: 1`)
 
 	singleScenarioID := "cat-is-called"
-	Scenarios(script, scenarios, &singleScenarioID)
+	Scenarios(script, scenarios, ScenariosOptions{
+		SingleScenarioID: &singleScenarioID,
+		WithCoverage:     "",
+		FilePath:         "",
+	})
 }
 
 func TestMultipleScenarios(t *testing.T) {
@@ -300,7 +324,7 @@ scenarios:
       - /path/to/file
       called: 0`)
 
-	results := Scenarios(script, scenarios, nil)
+	results := Scenarios(script, scenarios, ScenariosOptions{})
 	if len(results) != 2 {
 		t.Fatalf("expected 2 scenarios, got %d", len(results))
 	}
@@ -339,7 +363,7 @@ scenarios:
       - /path/to/file
       called: 0`)
 
-	results := Scenarios(script, scenarios, nil)
+	results := Scenarios(script, scenarios, ScenariosOptions{})
 	if len(results) != 2 {
 		t.Fatalf("expected 2 scenarios, got %d", len(results))
 	}
@@ -372,7 +396,7 @@ scenarios:
   expect:
     stdout: myvalue`)
 
-	results := Scenarios(script, scenarios, nil)
+	results := Scenarios(script, scenarios, ScenariosOptions{})
 	if len(results) != 2 {
 		t.Fatalf("expected one result, got %d", len(results))
 	}
