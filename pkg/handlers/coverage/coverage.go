@@ -36,6 +36,16 @@ func (o *Coverage) init() {
 			o.statements[node.Pos()] = node
 		case *syntax.IfClause:
 			toDelete[node.Pos()] = struct{}{}
+		case *syntax.ForClause:
+			toDelete[node.Pos()] = struct{}{}
+		case *syntax.Assign:
+			toDelete[node.Pos()] = struct{}{}
+		case *syntax.FuncDecl:
+			toDelete[node.Pos()] = struct{}{}
+		case *syntax.TestClause:
+			toDelete[node.Pos()] = struct{}{}
+		case *syntax.Block:
+			toDelete[node.Pos()] = struct{}{}
 		}
 		return true
 	})
