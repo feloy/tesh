@@ -29,13 +29,19 @@ func New(script *syntax.File) *Coverage {
 }
 
 func (o *Coverage) init() {
+	toDelete := make(map[syntax.Pos]struct{})
 	syntax.Walk(o.script, func(node syntax.Node) bool {
 		switch node.(type) {
 		case *syntax.Stmt:
 			o.statements[node.Pos()] = node
+		case *syntax.IfClause:
+			toDelete[node.Pos()] = struct{}{}
 		}
 		return true
 	})
+	for pos := range toDelete {
+		delete(o.statements, pos)
+	}
 	go func() {
 		for {
 			pos, more := <-o.ch

@@ -23,7 +23,7 @@ if true; then echo D; else echo E; fi`)
 	buf := bytes.Buffer{}
 	OutputCoverage(&buf, file, coverage, lens, covered)
 	expected := fmt.Sprintf(`%secho A%s && %secho B%s || echo C
-if %strue;%s then %secho D;%s else echo E; fi`, HIGHLIGHT_COLOR, RESET_COLOR, HIGHLIGHT_COLOR, RESET_COLOR, HIGHLIGHT_COLOR, RESET_COLOR, HIGHLIGHT_COLOR, RESET_COLOR)
+if %strue;%s then %secho D;%s else echo E; fi`, COVERED_COLOR, RESET_COLOR, COVERED_COLOR, RESET_COLOR, COVERED_COLOR, RESET_COLOR, COVERED_COLOR, RESET_COLOR)
 	if buf.String() != expected {
 		t.Fatalf("expected stdout to be\n%s, got\n%s", expected, buf.String())
 	}

@@ -8,14 +8,16 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-const HIGHLIGHT_COLOR = "\033[32m"
+const COVERED_COLOR = "\033[32m"
+const NOT_COVERED_COLOR = "\033[31m"
 const RESET_COLOR = "\033[0m"
 
 func OutputCoverage(w io.Writer, file io.Reader, positions []syntax.Pos, lens []uint, covered []uint) {
 	p := uint(0)
 	for i, pos := range positions {
+		color := COVERED_COLOR
 		if covered[i] == 0 {
-			continue
+			color = NOT_COVERED_COLOR
 		}
 		if p > pos.Offset() {
 			continue
@@ -32,7 +34,7 @@ func OutputCoverage(w io.Writer, file io.Reader, positions []syntax.Pos, lens []
 		if err != nil && err != io.EOF {
 			log.Fatalf("failed to read from file: %v", err)
 		}
-		fmt.Fprintf(w, "%s%s%s", HIGHLIGHT_COLOR, buf[:n], RESET_COLOR)
+		fmt.Fprintf(w, "%s%s%s", color, buf[:n], RESET_COLOR)
 		p = pos.Offset() + lens[i]
 	}
 	for {
