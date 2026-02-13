@@ -50,7 +50,11 @@ func NewTesh() *cobra.Command {
 				singleScenarioID = &o.SingleScenarioID
 			}
 
-			results := run.Scenarios(scriptFile, scenariosFile, singleScenarioID)
+			results := run.Scenarios(scriptFile, scenariosFile, run.ScenariosOptions{
+				SingleScenarioID: singleScenarioID,
+				WithCoverage:     o.CoverageFile,
+				FilePath:         args[0],
+			})
 
 			// TODO move to specific outputter
 			var exitCode int = 0

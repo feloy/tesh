@@ -10,8 +10,10 @@ import (
 	"github.com/feloy/tesh/pkg/api"
 	"github.com/feloy/tesh/pkg/expect"
 	"github.com/feloy/tesh/pkg/handlers/call"
+	"github.com/feloy/tesh/pkg/handlers/coverage"
 	"github.com/feloy/tesh/pkg/handlers/exec"
 	fileHandler "github.com/feloy/tesh/pkg/handlers/file"
+	"github.com/feloy/tesh/pkg/output"
 	"github.com/feloy/tesh/pkg/scenarios"
 	"github.com/feloy/tesh/pkg/system"
 
@@ -20,12 +22,23 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string) []api.ScenarioResult {
+type ScenariosOptions struct {
+	SingleScenarioID *string
+	WithCoverage     string // empty string for no coverage, "-" for stdout and a filename otherwise
+	FilePath         string
+}
+
+func Scenarios(file io.Reader, scenariosFile io.Reader, options ScenariosOptions) []api.ScenarioResult {
 	script, _ := syntax.NewParser().Parse(file, "")
 
 	mocksDefinitions, err := scenarios.ParseScenarios(scenariosFile)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	var cov *coverage.Coverage
+	if options.WithCoverage != "" {
+		cov = coverage.New(script)
 	}
 
 	var scenarioResults []api.ScenarioResult
@@ -40,7 +53,7 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 
 		execHandlers := []func(next interp.ExecHandlerFunc) interp.ExecHandlerFunc{}
 
-		if singleScenarioID != nil && scenario.ID != *singleScenarioID {
+		if options.SingleScenarioID != nil && scenario.ID != *options.SingleScenarioID {
 			continue
 		}
 		scenarioResult := api.ScenarioResult{
@@ -63,6 +76,10 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 
 		var stdout io.ReadWriter = os.Stdout
 		var stderr io.ReadWriter = os.Stderr
+		if options.WithCoverage == "-" {
+			stdout = nil
+			stderr = nil
+		}
 		if expectations != nil {
 			var stdoutBuffer bytes.Buffer
 			var stderrBuffer bytes.Buffer
@@ -77,6 +94,10 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 		}
 		runnerOptions = append(runnerOptions, interp.StdIO(nil, stdout, stderr))
 
+		if options.WithCoverage != "" {
+			runnerOptions = append(runnerOptions, interp.CallHandler(cov.GetCoverageHandler()))
+		}
+
 		runner, _ := interp.New(runnerOptions...)
 		result := runner.Run(context.TODO(), script)
 
@@ -87,6 +108,9 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 			intResult = 0
 		}
 		if expectations == nil {
+			if cov != nil {
+				displayCoverage(cov, options)
+			}
 			system.Exit(intResult)
 			return nil
 		} else {
@@ -98,8 +122,33 @@ func Scenarios(file io.Reader, scenariosFile io.Reader, singleScenarioID *string
 		scenarioResults = append(scenarioResults, scenarioResult)
 	}
 
+	if cov != nil {
+		displayCoverage(cov, options)
+	}
+
 	if !found {
-		log.Fatalf("scenario %s not found", *singleScenarioID)
+		log.Fatalf("scenario %s not found", *options.SingleScenarioID)
 	}
 	return scenarioResults
+}
+
+func displayCoverage(cov *coverage.Coverage, options ScenariosOptions) {
+	if options.WithCoverage != "" {
+		positions, lens, covered := cov.GetCoverageResult()
+		if options.WithCoverage == "-" {
+			scriptFile, err := os.Open(options.FilePath)
+			if err != nil {
+				log.Fatalf("failed to open file: %v", err)
+			}
+			defer scriptFile.Close()
+			output.OutputCoverage(os.Stdout, scriptFile, positions, lens, covered)
+		} else {
+			coverageFile, err := os.Create(options.WithCoverage)
+			if err != nil {
+				log.Fatalf("failed to open file: %v", err)
+			}
+			defer coverageFile.Close()
+			output.OutputCoverageTxt(coverageFile, options.FilePath, positions, lens, covered)
+		}
+	}
 }
