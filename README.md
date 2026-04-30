@@ -17,6 +17,14 @@ tl;dr: Testing shell scripts made easy. Run scripts with mocks, assertions, and 
 
 ## Install
 
+Download and run the install script:
+
+```sh
+curl -sSfL https://github.com/feloy/tesh/releases/latest/download/install.sh | sh
+```
+
+Or install with Go:
+
 ```sh
 go install github.com/feloy/tesh@latest
 ```
