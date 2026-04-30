@@ -43,6 +43,9 @@ changelog:
       - "^docs:"
       - "^test:"
 
+checksum:
+  disable: true
+
 release:
   footer: >-
 
