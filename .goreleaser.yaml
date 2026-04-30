@@ -47,8 +47,6 @@ checksum:
   disable: true
 
 release:
-  extra_files:
-    - glob: ./install.sh
   footer: |
 
     ---
