@@ -49,8 +49,14 @@ checksum:
 release:
   extra_files:
     - glob: ./install.sh
-  footer: >-
+  footer: |
 
     ---
+
+    ## Install
+
+    ```sh
+    curl -sSfL https://github.com/feloy/tesh/releases/download/{{ .Tag }}/install.sh | sh
+    ```
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
